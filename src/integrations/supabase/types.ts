@@ -14,7 +14,234 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          status: Database["public"]["Enums"]["payment_status"] | null
+          tournament_id: string | null
+          transaction_hash: string | null
+          usdt_wallet: string
+          user_id: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          tournament_id?: string | null
+          transaction_hash?: string | null
+          usdt_wallet: string
+          user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          tournament_id?: string | null
+          transaction_hash?: string | null
+          usdt_wallet?: string
+          user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          is_admin: boolean | null
+          updated_at: string | null
+          usdt_wallet: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          is_admin?: boolean | null
+          updated_at?: string | null
+          usdt_wallet?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean | null
+          updated_at?: string | null
+          usdt_wallet?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      scores: {
+        Row: {
+          game_data: Json | null
+          id: string
+          score: number
+          submitted_at: string | null
+          tournament_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          game_data?: Json | null
+          id?: string
+          score: number
+          submitted_at?: string | null
+          tournament_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          game_data?: Json | null
+          id?: string
+          score?: number
+          submitted_at?: string | null
+          tournament_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scores_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_participants: {
+        Row: {
+          id: string
+          joined_at: string | null
+          payment_verified: boolean | null
+          tournament_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          payment_verified?: boolean | null
+          tournament_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          payment_verified?: boolean | null
+          tournament_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_participants_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          current_participants: number | null
+          description: string | null
+          end_date: string
+          entry_fee: number
+          id: string
+          max_participants: number | null
+          name: string
+          prize_pool: number | null
+          start_date: string
+          status: Database["public"]["Enums"]["tournament_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_date: string
+          entry_fee: number
+          id?: string
+          max_participants?: number | null
+          name: string
+          prize_pool?: number | null
+          start_date: string
+          status?: Database["public"]["Enums"]["tournament_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_date?: string
+          entry_fee?: number
+          id?: string
+          max_participants?: number | null
+          name?: string
+          prize_pool?: number | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["tournament_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournaments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +250,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      payment_status: "pending" | "verified" | "rejected"
+      tournament_status: "upcoming" | "active" | "finished"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +378,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      payment_status: ["pending", "verified", "rejected"],
+      tournament_status: ["upcoming", "active", "finished"],
+    },
   },
 } as const
