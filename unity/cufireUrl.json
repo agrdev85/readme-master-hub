@@ -1,0 +1,6 @@
+{
+  "login": "http://localhost:8000/api/auth/login",
+  "register": "http://localhost:8000/api/auth/register", 
+  "readscore": "http://localhost:8000/api/scores/global",
+  "writescore": "http://localhost:8000/api/scores/submit"
+}
