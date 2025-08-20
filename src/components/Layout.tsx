@@ -53,7 +53,7 @@ export function Layout({
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Trophy className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-gradient px-[10px] py-[9px] my-0 mx-[17px]">CUFIRE INFINITY BATTLE</span>
+              <span className="text-xl font-bold text-gradient px-[10px] py-[9px] my-0 mx-[17px]">CUFIRE</span>
             </Link>
 
             {/* Desktop Navigation */}
