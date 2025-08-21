@@ -9,16 +9,25 @@ export function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const {
-    user,
-    profile,
-    signOut
-  } = useAuth();
+  const auth = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Show loading while auth is initializing
+  if (auth.loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleSignOut = async () => {
-    await signOut();
+    await auth.signOut();
     navigate('/');
   };
   const navigation = [{
@@ -34,7 +43,7 @@ export function Layout({
     href: '/leaderboard',
     icon: Crown
   }];
-  const userNavigation = user ? [{
+  const userNavigation = auth.user ? [{
     name: 'Dashboard',
     href: '/dashboard',
     icon: Target
@@ -69,7 +78,7 @@ export function Layout({
 
             {/* User Menu */}
             <div className="hidden md:flex items-center space-x-4">
-              {user ? <>
+              {auth.user ? <>
                   {userNavigation.map(item => {
                 const Icon = item.icon;
                 return <Link key={item.name} to={item.href} className={cn("flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors", location.pathname === item.href ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}>
@@ -79,7 +88,7 @@ export function Layout({
               })}
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-muted-foreground">
-                      {profile?.username || user.email}
+                      {auth.profile?.username || auth.user.email}
                     </span>
                     <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-muted-foreground hover:text-foreground">
                       <LogOut className="w-4 h-4" />
@@ -113,7 +122,7 @@ export function Layout({
                   </Link>;
           })}
               
-              {user && userNavigation.map(item => {
+              {auth.user && userNavigation.map(item => {
             const Icon = item.icon;
             return <Link key={item.name} to={item.href} className={cn("flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors", location.pathname === item.href ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")} onClick={() => setIsMobileMenuOpen(false)}>
                     <Icon className="w-5 h-5" />
@@ -121,7 +130,7 @@ export function Layout({
                   </Link>;
           })}
               
-              {user ? <Button variant="ghost" className="w-full justify-start space-x-2 px-3" onClick={() => {
+              {auth.user ? <Button variant="ghost" className="w-full justify-start space-x-2 px-3" onClick={() => {
             handleSignOut();
             setIsMobileMenuOpen(false);
           }}>
