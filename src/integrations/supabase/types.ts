@@ -19,7 +19,7 @@ export type Database = {
           amount: number
           created_at: string | null
           id: string
-          status: Database["public"]["Enums"]["payment_status"] | null
+          status: string | null
           tournament_id: string | null
           transaction_hash: string | null
           usdt_wallet: string
@@ -28,10 +28,10 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
-          amount: number
+          amount?: number
           created_at?: string | null
           id?: string
-          status?: Database["public"]["Enums"]["payment_status"] | null
+          status?: string | null
           tournament_id?: string | null
           transaction_hash?: string | null
           usdt_wallet: string
@@ -43,7 +43,7 @@ export type Database = {
           amount?: number
           created_at?: string | null
           id?: string
-          status?: Database["public"]["Enums"]["payment_status"] | null
+          status?: string | null
           tournament_id?: string | null
           transaction_hash?: string | null
           usdt_wallet?: string
@@ -59,18 +59,45 @@ export type Database = {
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      prizes: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          paid: boolean | null
+          percentage: number
+          rank_position: number
+          tournament_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          paid?: boolean | null
+          percentage: number
+          rank_position: number
+          tournament_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          paid?: boolean | null
+          percentage?: number
+          rank_position?: number
+          tournament_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "payments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "prizes_tournament_id_fkey"
+            columns: ["tournament_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_verified_by_fkey"
-            columns: ["verified_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "tournaments"
             referencedColumns: ["id"]
           },
         ]
@@ -78,29 +105,35 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string | null
+          current_tournament_id: string | null
           full_name: string | null
           id: string
           is_admin: boolean | null
           updated_at: string | null
           usdt_wallet: string | null
+          user_id: string | null
           username: string | null
         }
         Insert: {
           created_at?: string | null
-          full_name?: string | null
-          id: string
-          is_admin?: boolean | null
-          updated_at?: string | null
-          usdt_wallet?: string | null
-          username?: string | null
-        }
-        Update: {
-          created_at?: string | null
+          current_tournament_id?: string | null
           full_name?: string | null
           id?: string
           is_admin?: boolean | null
           updated_at?: string | null
           usdt_wallet?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_tournament_id?: string | null
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean | null
+          updated_at?: string | null
+          usdt_wallet?: string | null
+          user_id?: string | null
           username?: string | null
         }
         Relationships: []
@@ -138,13 +171,6 @@ export type Database = {
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "scores_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       tournament_participants: {
@@ -177,77 +203,68 @@ export type Database = {
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "tournament_participants_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       tournaments: {
         Row: {
+          admin_wallet: string | null
           created_at: string | null
           created_by: string | null
           current_participants: number | null
           description: string | null
           end_date: string
-          entry_fee: number
+          entry_fee: number | null
           id: string
           max_participants: number | null
           name: string
           prize_pool: number | null
           start_date: string
-          status: Database["public"]["Enums"]["tournament_status"] | null
+          status: string | null
           updated_at: string | null
         }
         Insert: {
+          admin_wallet?: string | null
           created_at?: string | null
           created_by?: string | null
           current_participants?: number | null
           description?: string | null
           end_date: string
-          entry_fee: number
+          entry_fee?: number | null
           id?: string
           max_participants?: number | null
           name: string
           prize_pool?: number | null
           start_date: string
-          status?: Database["public"]["Enums"]["tournament_status"] | null
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
+          admin_wallet?: string | null
           created_at?: string | null
           created_by?: string | null
           current_participants?: number | null
           description?: string | null
           end_date?: string
-          entry_fee?: number
+          entry_fee?: number | null
           id?: string
           max_participants?: number | null
           name?: string
           prize_pool?: number | null
           start_date?: string
-          status?: Database["public"]["Enums"]["tournament_status"] | null
+          status?: string | null
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "tournaments_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       payment_status: "pending" | "verified" | "rejected"
