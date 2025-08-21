@@ -29,7 +29,7 @@ export default function Leaderboard() {
       // Group by user and get their best score
       const userBestScores = new Map();
       data?.forEach(score => {
-        const userId = score.profiles?.username || score.profiles?.full_name;
+        const userId = (score.profiles as any)?.username || (score.profiles as any)?.full_name;
         if (!userBestScores.has(userId) || userBestScores.get(userId).score < score.score) {
           userBestScores.set(userId, score);
         }
