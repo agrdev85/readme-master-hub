@@ -261,6 +261,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_prize_distribution: {
+        Args: { tournament_id_param: string }
+        Returns: {
+          amount: number
+          percentage: number
+          rank_position: number
+        }[]
+      }
       is_admin: {
         Args: { user_id: string }
         Returns: boolean

@@ -1,6 +1,7 @@
 {
-  "login": "http://localhost:8000/api/auth/login",
-  "register": "http://localhost:8000/api/auth/register", 
-  "readscore": "http://localhost:8000/api/scores/global",
-  "writescore": "http://localhost:8000/api/scores/submit"
+  "login": "https://ztnsgmyjtnltwfwazavf.supabase.co/functions/v1/tournament-api/login",
+  "register": "https://ztnsgmyjtnltwfwazavf.supabase.co/functions/v1/tournament-api/register", 
+  "readscore": "https://ztnsgmyjtnltwfwazavf.supabase.co/functions/v1/tournament-api/scores/global",
+  "writescore": "https://ztnsgmyjtnltwfwazavf.supabase.co/functions/v1/tournament-api/scores/submit",
+  "current_tournament": "https://ztnsgmyjtnltwfwazavf.supabase.co/functions/v1/tournament-api/user/current-tournament"
 }
