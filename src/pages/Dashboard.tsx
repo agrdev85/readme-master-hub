@@ -15,10 +15,18 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (profile?.is_admin) {
+      navigate('/dashboard/admin', { replace: true });
+    }
+  }, [profile, navigate]);
+
   const [userTournaments, setUserTournaments] = useState<any[]>([]);
   const [userScores, setUserScores] = useState<any[]>([]);
   const [userPayments, setUserPayments] = useState<any[]>([]);
