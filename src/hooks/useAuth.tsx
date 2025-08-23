@@ -20,7 +20,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
@@ -32,7 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     getSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -48,13 +46,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .single();
-      
-      if (error) throw error;
+
+      if (error && error.code === 'PGRST116') {
+        // Crear perfil por defecto si no existe
+        const { error: insertError } = await supabase.from('profiles').insert({
+          user_id: userId,
+          username: user?.email?.split('@')[0] || 'user',
+          full_name: user?.email || 'Unknown',
+          usdt_wallet: '',
+          is_admin: user?.email === 'tu-email-admin@ejemplo.com' ? true : false, // Personaliza para tu admin
+          current_tournament_id: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        if (insertError) throw insertError;
+
+        // Volver a consultar
+        ({ data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', userId)
+          .single());
+      } else if (error) {
+        throw error;
+      }
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -62,21 +82,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
   const signUp = async (email: string, password: string, userData: any) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: userData,
-      },
-    });
+    const { error } = await supabase.auth.signUp({ email, password, options: { data: userData } });
     if (error) throw error;
   };
 
@@ -87,26 +98,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateProfile = async (data: any) => {
     if (!user) return;
-    
+
     const { error } = await supabase
       .from('profiles')
-      .update(data)
-      .eq('id', user.id);
-    
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq('user_id', user.id);
     if (error) throw error;
-    
+
     await fetchProfile(user.id);
   };
 
-  const value = {
-    user,
-    profile,
-    loading,
-    signIn,
-    signUp,
-    signOut,
-    updateProfile,
-  };
+  const value = { user, profile, loading, signIn, signUp, signOut, updateProfile };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
