@@ -108,7 +108,7 @@ export type Database = {
           current_tournament_id: string | null
           full_name: string | null
           id: string
-          is_admin: boolean | null
+          is_admin: boolean
           updated_at: string | null
           usdt_wallet: string | null
           user_id: string | null
@@ -119,7 +119,7 @@ export type Database = {
           current_tournament_id?: string | null
           full_name?: string | null
           id?: string
-          is_admin?: boolean | null
+          is_admin?: boolean
           updated_at?: string | null
           usdt_wallet?: string | null
           user_id?: string | null
@@ -130,7 +130,7 @@ export type Database = {
           current_tournament_id?: string | null
           full_name?: string | null
           id?: string
-          is_admin?: boolean | null
+          is_admin?: boolean
           updated_at?: string | null
           usdt_wallet?: string | null
           user_id?: string | null
@@ -164,6 +164,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_scores_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "scores_tournament_id_fkey"
             columns: ["tournament_id"]
