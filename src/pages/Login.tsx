@@ -25,9 +25,15 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      const { profile } = await signIn(email, password);
       toast.success('¡Bienvenido de vuelta!');
-      navigate(from, { replace: true });
+      
+      // Redirigir admin al panel de administración
+      if (profile?.is_admin) {
+        navigate('/dashboard/admin', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (error: any) {
       toast.error(error.message || 'Error al iniciar sesión');
     } finally {

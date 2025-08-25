@@ -327,6 +327,28 @@ serve(async (req) => {
         })
         .eq('id', payment.tournament_id);
 
+      // Check if tournament is full and update status
+      const { data: tournament } = await supabaseClient
+        .from('tournaments')
+        .select('current_participants, max_participants')
+        .eq('id', payment.tournament_id)
+        .single();
+
+      if (tournament && tournament.current_participants >= tournament.max_participants) {
+        // Tournament is full, start it
+        const now = new Date();
+        const endTime = new Date(now.getTime() + (24 * 60 * 60 * 1000)); // 24 horas por defecto
+        
+        await supabaseClient
+          .from('tournaments')
+          .update({
+            status: 'active',
+            start_date: now.toISOString(),
+            end_date: endTime.toISOString()
+          })
+          .eq('id', payment.tournament_id);
+      }
+
       // Update user's current tournament
       await supabaseClient
         .from('profiles')

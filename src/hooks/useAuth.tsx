@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   profile: any | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ profile: any }>;
   signUp: (email: string, password: string, userData: any) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
@@ -81,9 +81,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<{ profile: any }> => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    
+    // Esperamos a que se cargue el perfil después del login
+    let attempts = 0;
+    while (!profile && attempts < 10) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      attempts++;
+    }
+    
+    return { profile };
   };
 
   const signUp = async (email: string, password: string, userData: any) => {
